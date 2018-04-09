@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="test" class="com.spring.Test">
+        <property name="name" value="SpringLearning"></property>
+    </bean>
+
+    <bean id="car" class="com.spring.Car">
+        <constructor-arg value="BMW" index="0"></constructor-arg>
+        <constructor-arg value="BeiJing" index="1"></constructor-arg>
+        <constructor-arg value="500000" type="int"></constructor-arg>
+    </bean>
+
+    <bean id="car2" class="com.spring.Car">
+        <constructor-arg value="AUDI" type="java.lang.String"></constructor-arg>
+        <constructor-arg value="HarBin" type="java.lang.String"></constructor-arg>
+        <constructor-arg value="300.0" type="double"></constructor-arg>
+
+    </bean>
+</beans>
