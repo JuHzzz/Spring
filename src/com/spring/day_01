@@ -1,0 +1,51 @@
+Spring 概述：
+   1. Spring 是一个轻量级（非侵入性，不需要继承任何类实现任何接口就可以使用功能）的开源框架;
+   2. 核心内容是IOC(反转控制)&DI（依赖注入）和AOP（面向切面编程）;
+   3. 它是一站式的，通过Spring框架可以整合一些第三方的类库或者一些优秀的企业级的框架（Spring MVC , MyBatis）;
+   4. 解决了业务逻辑层和其他各层的松耦合问题，将面向接口的编程思想贯穿整个系统应用;
+
+ <IOC&DI>
+   *.轻量：Spring从大小和开销来说都是轻量的，它可以发布在一个不足1M的jar包中，所需的处理开销也非常小；另外，
+   它还是非侵入式的，Spring中的对象不依赖于Spring中特定的类。
+   *.IOC（控制反转）:一般情况下，我们需要请求系统资源时，都会向系统发送一个请求资源的请求，系统收到请求后，
+   可能会调用特定的方法来为我们提供资源，这是我们收到资源后在进行处理。但是在Spring中，可以反转资源请求的
+   方向，我们无需向系统发送请求资源的请求，只需提供或选择接收资源的方式，系统就会自动的分配资源。（容器在
+   对象初始化时不等对象请求就将依赖传递给他）
+   --DI:组件以一种预先定义好的方式接受来自如容器的资源注入
+
+ <Spring 配置 Bean>
+    配置形式：①基于XML文件格式 ②基于注解的形式
+    配置方式：①通过全类名（反射），通过工厂方法（静态工厂方法&实例工厂方法），FactoryBean
+    IOC容器：①BeanFactory ② ApplicationContext
+    依赖注入的方式：①属性注入 ②构造器注入
+
+  <Bean 介绍>
+    class: bean的全类名，通过反射的方式在容器中创建bean，并对bean进行初始化
+    id：标识Bean，可以说是Bean的标识，可以通过id找到指定的Bean。它在IOC容器中必须是唯一的。
+    <property 介绍>
+        name：属性名
+        value：给指定的属性赋值
+    <constructor-arg 介绍>
+        没有name属性
+        value：通过指定构造器给成员变量赋初值。
+        *当构造器重载时，可以通过添加index或type给指定的成员变量初始化。
+
+  <IOC 容器>
+    IOC 容器的实现方式有两种，一种是BeanFactory，另一种是ApplicationContext；
+    区别：
+    BeanFactory是Spring框架的基础设施，面向Spring框架本身；而ApplicationContext面向使用Spring框架的
+    开发者，几乎所有的应用场合都直接使用ApplicationContext而不用底层的BeanFactory。
+    两者在XML中配置是相同的。
+    ***注意：在SpringIOC 容器里读取Bean配置创建Bean实例之前一定要对它进行实例化，只有在容器实例化后，才
+    可以从容器里边获取Bean并使用。
+
+    <ApplicationContext>
+
+        1.它是一个接口对象，可以通过他的实现类来创建ApplicationContext对象，常用的实现类有两种，
+           一个是ClassPathXMLApplicationContext:从类路径下加载XML文件
+           另一个是FileSystemXMLApplicationContext:从文件系统中加载XML文件；
+        2.在初始化上下文时就实例化所有的单例的Bean。
+
+         ApplicationContext app = new ClassPathXmlApplicationContext("spring-config.xml");
+           当通过实例化ClassPathXMLApplicationContext（参数）来创建对象时，需要根据传递的参数（要
+           加载的XML文件名）来加载指定的XML文件，将这个XML文件加载到容器中并实例化Bean。
