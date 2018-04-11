@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="com.spring_02.Address" p:area="Huston"
+          p:street="First"></bean>
+    <bean id="address2" parent="address" p:street="Second"></bean>
+
+    <bean id="car" class="com.spring_02.Car" p:name="Audi"
+          p:price="500000.0"></bean>
+    <bean id="car2" class="com.spring_02.Car" p:name="Bmw"
+          p:price="1000000.0"></bean>
+
+    <bean id="person" class="com.spring_02.Person" p:name="Leo" p:address-ref="address"
+        p:car-ref="car" depends-on="car"></bean>
+    <bean id="person2" parent="person" p:name="Lion" p:car-ref="car2"></bean>
+
+
+</beans>

@@ -16,9 +16,11 @@ public class Car {
         this.size = size;
     }
 
-    public Car(String name, String area, double price) {
+
+    public Car(String name, String area, int size, double price) {
         this.name = name;
         this.area = area;
+        this.size = size;
         this.price = price;
     }
 
@@ -32,5 +34,7 @@ public class Car {
                 '}';
     }
 
-
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }

@@ -2,11 +2,11 @@ package com.spring;
 
 public class Test {
 
-    private  String  name;
+    private  String  nameer;
 
     public void setName(String name) {
         System.out.println("setName:"+name);
-        this.name = name;
+        this.nameer = name;
     }
 
     public Test(){
@@ -14,6 +14,6 @@ public class Test {
     }
 
     public void hello(){
-        System.out.println("Hello:"+name);
+        System.out.println("Hello:"+nameer);
     }
 }

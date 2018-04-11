@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="com.spring_03.Address">
+        <property name="city" value="#{'BeiJing'}"></property>
+        <property name="street" value="#{'ChangAn'}"></property>
+    </bean>
+
+    <bean id="car" class="com.spring_03.Car">
+        <property name="name" value="#{'BMW'}"></property>
+        <property name="price" value="#{5000000}"></property>
+        <property name="circle" value="#{T(java.lang.Math).PI * 20}"></property>
+    </bean>
+
+    <bean id="person" class="com.spring_03.Person">
+        <property name="car" value="#{car}"></property>
+        <property name="address" value="#{address}"></property>
+        <property name="info" value="#{car.price > 300000 ? 'Boss' : 'worker'}"></property>
+    </bean>
+
+    <bean class="com.spring_03.Student" id="student" init-method="init" destroy-method="destroy">
+        <property name="name" value="#{'Leo'}"></property>
+    </bean>
+    <bean class="com.spring_03.BeanProcess"></bean>
+</beans>
