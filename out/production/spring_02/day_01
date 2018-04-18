@@ -1,0 +1,188 @@
+Spring 概述：
+   1. Spring 是一个轻量级（非侵入性，不需要继承任何类实现任何接口就可以使用功能）的开源框架;
+   2. 核心内容是IOC(反转控制)&DI（依赖注入）和AOP（面向切面编程）;
+   3. 它是一站式的，通过Spring框架可以整合一些第三方的类库或者一些优秀的企业级的框架（Spring MVC , MyBatis）;
+   4. 解决了业务逻辑层和其他各层的松耦合问题，将面向接口的编程思想贯穿整个系统应用;
+
+ <IOC&DI>
+   *.轻量：Spring从大小和开销来说都是轻量的，它可以发布在一个不足1M的jar包中，所需的处理开销也非常小；另外，
+   它还是非侵入式的，Spring中的对象不依赖于Spring中特定的类。
+   *.IOC（控制反转）:一般情况下，我们需要请求系统资源时，都会向系统发送一个请求资源的请求，系统收到请求后，
+   可能会调用特定的方法来为我们提供资源，这是我们收到资源后在进行处理。但是在Spring中，可以反转资源请求的
+   方向，我们无需向系统发送请求资源的请求，只需提供或选择接收资源的方式，系统就会自动的分配资源。（容器在
+   对象初始化时不等对象请求就将依赖传递给他）
+   --DI:组件以一种预先定义好的方式接受来自如容器的资源注入
+
+ <Spring 配置 Bean>
+    配置形式：①基于XML文件格式 ②基于注解的形式
+    配置方式：①通过全类名（反射），通过工厂方法（静态工厂方法&实例工厂方法），FactoryBean
+    IOC容器：①BeanFactory ② ApplicationContext
+    依赖注入的方式：①属性注入 ②构造器注入
+
+  <Bean 介绍>
+    class: bean的全类名，通过反射的方式在容器中创建bean，并对bean进行初始化
+    id：标识Bean，可以说是Bean的标识，可以通过id找到指定的Bean。它在IOC容器中必须是唯一的。
+    <property 介绍>
+        name：属性名
+        value：给指定的属性赋值
+    <constructor-arg 介绍>
+        没有name属性
+        value：通过指定构造器给成员变量赋初值。
+        *当构造器重载时，可以通过添加index或type给指定的成员变量初始化。
+
+  <IOC 容器>
+    IOC 容器的实现方式有两种，一种是BeanFactory，另一种是ApplicationContext；
+    区别：
+    BeanFactory是Spring框架的基础设施，面向Spring框架本身；而ApplicationContext面向使用Spring框架的
+    开发者，几乎所有的应用场合都直接使用ApplicationContext而不用底层的BeanFactory。
+    两者在XML中配置是相同的。
+    ***注意：在SpringIOC 容器里读取Bean配置创建Bean实例之前一定要对它进行实例化，只有在容器实例化后，才
+    可以从容器里边获取Bean并使用。
+
+    <ApplicationContext>
+
+        1.它是一个接口对象，可以通过他的实现类来创建ApplicationContext对象，常用的实现类有两种，
+           一个是ClassPathXMLApplicationContext:从类路径下加载XML文件
+           另一个是FileSystemXMLApplicationContext:从文件系统中加载XML文件；
+        2.在初始化上下文时就实例化所有的单例的Bean。
+
+         ApplicationContext app = new ClassPathXmlApplicationContext("spring-config.xml");
+           当通过实例化ClassPathXMLApplicationContext（参数）来创建对象时，需要根据传递的参数（要
+           加载的XML文件名）来加载指定的XML文件，将这个XML文件加载到容器中并实例化Bean。
+    <Bean的引用>
+        我们可以通过在<property>中定义属性ref来引用外部的其他Bean
+
+    <内部Bean>
+        1.当我们在位某一个属性赋值的时候可以在一对<property></property>中写一个内部Bean，来为这个具有多个
+        属性值的属性初始化。
+        2.该bean不管是否指定id或者name，该bean都有一个唯一的匿名标识符，且不能被指定别名
+        3.内部Bean不可被外围Bean引用
+    <集合属性>
+        1.List:     <property name = "">
+                        <List>
+                            ...
+                        </List>
+                    </property>
+
+        2.Map       <property name = "">
+                        <map>
+                            <entry></entry>
+                            ...
+                        </map>
+                    </property>
+
+
+        3.Set       <property name = "">
+                        <set>
+                             <value></value>
+                             <ref></ref>
+                         </set>
+                    </property>
+
+        4.Properties  <property name = "">
+                            <props>
+                                <prop>
+                                ...
+                            </props>
+                      </property>
+        **如果存在多个Bean需要引用相同的集合时，我们可以通过定义Util语句使用集合标签定义独立的集合Bean，
+        这样我们就可以在多个Bean中根据需要引用集合，但注意一定要在<beans>中添加<util>语句。
+        根据需要可以有：<util:list>,<util:map>,<util:set>,<util:properties>等。
+
+    <P命名空间>
+        相对于传统的配置方式，更加的简洁
+
+    <XML配置里的Bean自动装配>
+        1.Spring IOC容器可以自动装配Bean，需要做的仅仅是在<bean>的autowire属性里指定自动装配的模式
+            ①.byType（根据类型自动装配）:根据在bean中的class类型进行自动装配，如果IOC容器中存在多个相同
+            类型（class）的bean，那么就会抛出异常，不能进行自动装配。
+            ②.byName（根据名称自动装配）:在IOC容器中进行配置时，id中的名称必须与bean中setter风格的属性名一致
+            如果有存在一致的就自动装配，否则就不装配；
+            ③.constructor（通过构造器自动装配）:由于通过这种方式自动装配会使后期处理变得更加复杂，不推荐使用。
+
+        2.自动装配的缺点
+            ①.在IOC容器中进行自动装配时，会将Bean的所有属性进行装配，不能根据需要选择属性进行装配，不够灵活；
+            ②.通过autowire选择自动装配的方式时，只能选择其中的一种，不能同时使用两种方式；
+            ③.一般情况下，很少使用自动装配，因为明确配置文档会使开发流程更清晰明了。
+
+    <Bean中的继承关系>
+        1.通过在IOC容器中配置bean来实现bean的继承关系，通过在<bean>中使用parent属性来定义其"继承"的父Bean；
+        2.子Bean可以将父Bean中的配置信息继承过来，包括属性配置；
+        3.子Bean也可以将父Bean中的配置信息进行覆盖；
+        4.父Bean中的部分属性不可被继承，如自动装配时的autowire不可被继承，设置父Bean模板的abstract属性为true
+            * 模板是将父Bean设置成抽象的Bean（类似于抽象类）：不能被IOC容器实例化，仅可以被继承
+        5.可以忽略父Bean的class属性，让子Bean指定自己的类，而共享相同的属性配置，但此时必须将abstract设为true
+     ***仅仅是配置信息的继承***
+
+    <依赖Bean配置>
+        通过depends-on属性来配置当前Bean前置依赖的Bean（前置依赖的Bean会在当前Bean实例化之前就创建好），
+        所谓依赖Bean，就是指当前Bean初始化时，在IOC容器中就必须存在并且创建完成的另外的Bean，供本Bean使用
+
+    <IOC容器中Bean之间的关系>
+        1.注入关系：
+            ①.构造器注入:
+            ②.属性注入:
+            ③.方法注入:
+        2.引用关系：我们不光可以通过ref标签来引用其他的bean，而且可以通过idref标签来引用其他bean的名字。
+        他的主要作用是：在IOC容器启动的时候就可以检查引用关系的正确性。那么这样就可以提前发现配置信息是否存在错误。
+        3.继承关系：在IOC容器中配置Bean时，可以通过这种方式来继承其父Bean的配置信息；也可以设置abstract为true，
+        实现类似于抽象类的抽象Bean，不可被实例化但可被其他Bean继承。
+        4.依赖关系：通过depends-on属性配置当前Bean前置依赖的 Bean，这个Bean在实例化时其依赖Bean就已经创建好，
+        当前Bean使用。
+
+    <Bean的作用域>
+    **Bean在IOC容器初始化时就已经创建完毕，所以通过getBean（）获取Bean对象时是不会创建Bean的，仅仅是引用。
+    **当Scope属性值为Prototype时，在IOC容器初始化的时候不会创建这个Bean，当通过getBean()获取Bean对象时候，
+      才会创建Bean。
+            1.IOC容器中，创建的Bean 都是单例（Singleton）的，初始化时IOC容器只会为Bean创建一个对象，我们通过
+            getBean()方法得到的Bean都是同一个对象的同一个引用。
+            2.可以通过Bean的Scope属性设置Bean的作用域，默认的是单例（Singleton），还有prototype（原型），每次
+            通过getBean()方法都会返回一个新的Bean对象的引用。
+
+    <使用外部屬性文件>
+        1.通常，我们在IOC容器中配置Bean时，有时候根据需要会引用一些系统资源，如文件，数据连接等，我们可以直接
+        在Bean中通过配置相应的属性来获取系统资源的入口。但这么做有一定的局限性，如果说我配置的系统资源有做过更改，
+        那我们就需要将容器中的Bean的属性都做更改，不够灵活并且可能会出现一些错误。
+        2.我们可以通过引用外部属性文件，来对相应的属性进行配置，具体做法是通过在<Beans>下通过<context:property-placeholder location="">
+        这个属性，来引用外部属性文件，在<Bean>中用一种类似于EL表达式的语句"${}"来引入相应属性的值，这样当系统资源发生更改时
+        我们只需要修改外部属性文件即可，无需再修改xml文件。
+            **xmlns:context="http://www.springframework.org/schema/context"
+            **<context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+            **http://www.springframework.org/schema/context
+            **http://www.springframework.org/schema/context/spring-context.xsd
+
+        ***要记得声明context的xsd文件，这样Spring启动时候就会通过相应的XSD文件来检验XML文件
+
+    <SpEL表达式>
+
+        1.Spring表达式语言（简称SpEL）:是一个支持运行时查询和操作对象图的强大的表达式语言；
+        2.语法类似于EL表达式：但是SpEL使用#{}作为定界符，所有在{}中的内容都认为是SpEL;
+        3.为bean的属性进行动态赋值提供了便利，我们可以通过SpEL实现：
+                ①.通过bean的id对bean进行引用；
+                ②.调用方法以及引用对象中的属性；
+                ③.计算表达式的值；
+                ④.正则表达式的匹配。
+
+    <IOC容器中Bean的生命周期>
+         *类似于servlet，通过servlet容器可以管理servlet的声明周期（init,service,destroy）,在IOC容器中
+         也可以通过在bean 声明里中配置（init-method，destroy-method）来管理bean的声明周期
+            1.首先通过构造器创建Bean的实例
+            2.给bean中的属性进行初始化
+            3.执行bean的初始化方法
+            4.bean 可以使用了
+            5.执行bean的销毁方法，销毁bean
+         *创建Bean的后置处理器
+            --通过实现BeanPostProcessor接口，实现接口的postProcessBeforeInitialization（）和postProcessAfterInitialization（）方法
+            1.bean的后置处理器可以实现在初始化bean的前后进行一些处理，可以验证bean中属性的合法性，对bean
+            中的部分属性做出一些额外的处理。
+            2.无需再后置处理器中写明id 属性，他会对IOC容器里的所有实例进行逐一的处理。
+                ①.执行bean对象的构造方法创建Bean的实例
+                ②.对bean中的属性进行初始化
+                ③.执行后置处理器中的postProcessBeforeInitialization（）方法
+                ④.执行Bean的初始化方法
+                ⑤.执行后置处理器中的postProcessAfterInitialization（）方法
+                ⑥.使用bean
+                ⑦.销毁bean
+
+
+

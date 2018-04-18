@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="test" class="com.spring.Test">
+        <property name="name" value="SpringLearning"></property>
+    </bean>
+
+    <bean id="car" class="com.spring.Car">
+        <constructor-arg value="BMW" index="0"></constructor-arg>
+        <constructor-arg value="Beijing" index="1"></constructor-arg>
+        <constructor-arg value="500000" type="int"></constructor-arg>
+    </bean>
+
+    <bean id="car2" class="com.spring.Car">
+        <constructor-arg value="AUDI" type="java.lang.String"></constructor-arg>
+        <constructor-arg type="java.lang.String">
+            <value><![CDATA[<HarBin>]]></value>
+        </constructor-arg>
+        <constructor-arg value="10" type="int"></constructor-arg>
+
+    </bean>
+
+    <bean id="person" class="com.spring.Person">
+        <property name="name" value="Leo"></property>
+        <property name="age" value="22"></property>
+        <!--利用ref建立Bean之间的引用关系 -->
+        <property name="myCar">
+            <bean  class="com.spring.Car">
+                <constructor-arg value="红旗"></constructor-arg>
+                <constructor-arg value="China"></constructor-arg>
+                <constructor-arg value="5"></constructor-arg>
+                <constructor-arg value="3000000.0"></constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="person2" class="com.spring.Person" p:name="Jack" p:age="23" p:myCar-ref="car2">
+    </bean>
+
+    <bean id="person3" class="com.spring.Person">
+        <property name="age" value="25"></property>
+        <property name="name" value="Mike"></property>
+        <property name="cars">
+            <list>
+                <ref bean="car"></ref>
+                <ref bean="car2"></ref>
+            </list>
+        </property>
+        <property name="cars2">
+            <map>
+                <entry key="①" value-ref="car"></entry>
+                <entry key="②" value-ref="car2"></entry>
+            </map>
+        </property>
+    </bean>
+    <util:list id="cars">
+        <ref bean="car"></ref>
+        <ref bean="car2"></ref>
+    </util:list>
+
+    <bean id="person5" class="com.spring.Person" >
+        <property name="name" value="Rose"></property>
+        <property name="age" value="18"></property>
+        <property name="cars" ref="cars"></property>
+    </bean>
+    <bean id="dataSource" class="com.spring.DataSource">
+        <property name="properties">
+            <props>
+                <prop key="user">root</prop>
+                <prop key="password">123456</prop>
+                <prop key="jdbcURL">jdbc:mysql://localhost:3306/test</prop>
+                <prop key="driverClass">com.mysql.jdbc.Driver</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
