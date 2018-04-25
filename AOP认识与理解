@@ -1,0 +1,195 @@
+------Spring AOP 的认识与理解------
+
+    <导入>
+    1.在OOP编程思想中，我们解决问题是从问题本身出发，在问题空间内建模，是对问题空间的的抽象；面向对象编程提倡的万物皆对象，是将问题空间中所涉及和抽象
+    出来的事物都看做对象，使得我们解决问题的手段不会变的那么局限；
+    2.但可能会出现这样的情况，在我们的程序流程中，有需要在某个方法执行前后做出一些额外处理，比如日志的记录，用户的验证等，这些额外的处理是和我们方法
+    本身的业务逻辑毫无关系的，如果说我们程序流程中的每一个方法都需要执行这些操作，每一个方法都会有这些操作所涉及的代码，会使得我们整个系统的程序变得
+    异常的庞大，当我们的非业务逻辑，也就是这些额外处理需要作出修改的时候，整个程序中所有涉及到非业务逻辑的代码都需要做出来更改，可谓是牵一发而动全身，
+    这样会给我们带来代码混乱和代码分散的问题；
+    <构思>
+    为了解决代码混乱问题和代码分散问题提出了AOP（面向切面编程）的思想
+    面向切面编程是对动态代理的升华，那么什么是动态代理呢？
+    <动态代理>：
+        在编写程序时，无需我手动编写代理类，通过Proxy类的静态方法newProxyInstance(loader,interface,object)方法，可以帮我创建一个代理类，
+        它是我指定的委托类的代理类（通过我传过去的指定的委托类object）,然后通过编写一个实现了InvocationHandler接口的中介类，
+        这个中介类需要做的就是让代理实例执行方法调用并返回一个处理结果（重写的invoke(proxy，method，args)方法，proxy是我的代理类实例，
+        method是代理类要执行的方法，args是方法的参数），在invoke（）方法中，指定method对象的invoke（）方法，来返回处理结果，在这之前或者之后，
+        都可以执额外的处理；
+        
+        这样我可以将这些额外操作都交由代理类代理执行，在我的业务逻辑执行前后执行那些非业务逻辑，而业务逻辑的代码和非业务逻辑的代码是两个毫不相关的
+        模块，这样就使得我们的系统更加的清晰，整个结构有更高的复用性和可维护性。
+    *******详情请看我的另外一个Repository:Design-Model,包含了对于代理模式的讲解********
+    
+    <AOP>
+        面向切面编程：通过预编译方式和动态代理实现程序功能的统一维护的一种技术，它是对OOP思想的补充；
+   
+   <AOP&OOP区分>
+        AOP、OOP在字面上虽然非常类似，但却是面向不同领域的两种设计思想。
+        OOP（面向对象编程）针对业务处理过程的实体及其属性和行为进行抽象封装，以获得更加清晰高效的逻辑单元划分。
+        而AOP则是针对业务处理过程中的切面进行提取，它所面对的是处理过程中的某个步骤或阶段，以获得逻辑过程中各部分之间低耦合性的隔离效果。
+        这两种设计思想在目标上有着本质的差异。
+        上面的陈述可能过于理论化，举个简单的例子，对于“雇员”这样一个业务实体进行封装，自然是OOP/OOD的任务，我们可以为其建立一个“Employee”类，
+        并将“雇员”相关的属性和行为封装其中。而用AOP设计思想对“雇员”进行封装将无从谈起。
+        同样，对于“权限检查”这一动作片断进行划分，则是AOP的目标领域。而通过OOD/OOP对一个动作进行封装，则有点不伦不类。
+        换而言之，OOD/OOP面向名词领域，AOP面向动词领域。
+        关系
+        很多人在初次接触 AOP 的时候可能会说，AOP 能做到的，一个定义良好的 OOP 的接口也一样能够做到，我想这个观点是值得商榷的。
+        AOP和定义良好的 OOP 的接口可以说都是用来解决并且实现需求中的横切问题的方法。但是对于 OOP 中的接口来说，它仍然需要我们在相应的模块中
+        去调用该接口中相关的方法，这是 OOP 所无法避免的，并且一旦接口不得不进行修改的时候，所有事情会变得一团糟；AOP 则不会这样，你只需要修改
+        相应的 Aspect，再重新编织（weave）即可。 当然，AOP 也绝对不会代替 OOP。核心的需求仍然会由 OOP 来加以实现，而 AOP 将会和 OOP 整合起来，
+        以此之长，补彼之短。
+
+       
+    <AOP的基本内容>
+        
+        1.横切关注点：在整个程序结构中，每一个非业务逻辑的代码块都是一个横切关注点，具体到每一个方法都是一个横切关注点
+        2.连接点：在Spring中允许是通知的地方，每个方法的前后，抛出异常时都可以是连接点，和方法有关的前前后后都是连接点
+        3.切点：实际需要通知的地方，是连接点的筛选和集合
+        4.通知：非业务逻辑中需要做的一些处理，比如日志的记录，验证等系统级服务，根据处理的顺序在方法的什么位置，分为：
+              ①.前置通知：在方法执行前需要做的处理，比如验证
+              ②.返回通知: 在方法正常执行结束后需要做的处理，可以访问目标方法的返回结果
+                通过传一个JoinPoint参数，获取返回结果
+              ③.异常通知：在方法执行过程中抛出异常需要做的处理，可以指定异常
+                注意：异常通知中，我可以声明要捕获的异常，如果发生的异常和我声明的异常不一致，那通知也不会执行
+              ④.后置通知：在方法整个执行结束后需要做的处理，它可以是正常执行结束，也可以是非正常执行结束，它不能访问目标方法的返回结果
+              ⑤.环绕通知：环绕通知中杂糅了以上四种通知，可根据需要在方法的前后做额外处理
+                注意：需要添加ProceedingJoinPoint参数，并且需要返回结果
+         5.切面：是通知和切点的结合，将程序结构中的所有的一样的非业务逻辑代码块和它所需要做的处理逻辑抽象出来
+         6.目标对象：被通知的对象
+    
+    <注解的方式配置AOP>
+      
+        1.导入AspectJ的jar包
+        2.将横切关注点抽象到切面中，通过切点表达式完成execution（切点表达式）
+        3.在切面类中加入注解@Aspect，具体的通知方法前加上注解，前置@Before，返回@AfterReturning ，异常@AfterThrowing，后置@After，环绕@Arround
+        4.配置XML，为具体匹配到的目标方法生成一个代理对象
+        5.方法体中写非业务逻辑
+    
+    <切面的优先级>
+        
+        通过添加@Order注解来为切面定义优先级，数字越小优先级越高
+       
+     <重用切点表达式>
+        当我切面中有多个不同的通知是对同一个切点进行处理时，我可以创建一个方法来声明切点，这个类中不做出声明切点以外的任何处理，在通知的切点表达式中
+        通过引用这个方法配置切点。需要注意得是，如果通知在另外一个切面中的话，引入这个方法需要带上方法所在的包名。
+    
+    
+    <切面的例子>
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import javax.lang.model.element.NestingKind;
+
+@Aspect
+@Order(2) //优先级为2
+@Component
+public class LogAspect {
+
+    //声明切入点
+    @Pointcut("execution(* advice.CalcultorSimple.*(..))")
+    public  void declareJoinPoint(){}
+
+    //前置通知
+    @Before("declareJoinPoint()")
+    public void beforeMethod(JoinPoint joinPoint){
+        String  methodName = joinPoint.getSignature().getName();
+        System.out.println("Hello~当前正在执行的方法是："+methodName);
+    }
+
+    //后置通知
+
+    public void afterMethod(JoinPoint joinPoint){
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println(methodName+"方法执行完毕！关闭方法所需各种资源！");
+    }
+
+    //返回通知
+    public void returningMethod(JoinPoint joinPoint,Object result){
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("方法正常执行结束！返回方法执行结果："+result);
+    }
+
+    //异常通知
+    public void afterThrowing(JoinPoint joinPoint,Exception  exception){
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("方法出现异常！发生："+exception);
+    }
+
+    //环绕通知
+    @Around( "execution(* advice.CalcultorSimple.*(..))")
+    public Object aroundMethod(ProceedingJoinPoint proceedingJoinPoint){
+
+        Object result = null;
+        String methodName = proceedingJoinPoint.getSignature().getName();
+
+        try {
+            //前置通知
+            beforeMethod(proceedingJoinPoint);
+            result = proceedingJoinPoint.proceed();
+            //返回通知
+            returningMethod(proceedingJoinPoint,result);
+        } catch (Throwable throwable) {
+            //异常通知
+            throwable.printStackTrace();
+            afterThrowing(proceedingJoinPoint,(Exception)throwable);
+        }
+        //后置通知
+        afterMethod(proceedingJoinPoint);
+        return result;
+    }
+
+
+        //环绕通知
+    @Around("execution(* advice.CalcultorSimple.*(..))")
+    public Object aroundMethod(ProceedingJoinPoint proceedingJoinPoint){
+
+        Object result = null;
+        String methodName = proceedingJoinPoint.getSignature().getName();
+        try {
+            //前置通知
+            System.out.println("1."+methodName+"方法开始执行；");
+            //方法执行
+            result = proceedingJoinPoint.proceed();
+            //返回通知
+            System.out.println("2.方法正常执行完毕，获得返回值："+result);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            //异常通知
+            System.out.println("*.方法执行过程中出现异常！"+throwable);
+        }
+        //后置通知
+
+        System.out.println("3.方法结束！关闭所有资源！");
+
+        return result;
+    }
+
+}
+
+//////////////////////////////////////////////////////////
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Order(1)
+@Component
+public class Validation {
+
+    @Before("advice.LogAspect.declareJoinPoint()")
+    public void validate(JoinPoint joinPoint){
+        System.out.println("验证用户信息合法性！");
+    }
+
+}
+
+
+-------------------------以上均为个人理解和总结，欢迎各位大佬指正，共同进步--------------------------------
